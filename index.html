@@ -3,23 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>泪纪蛇闻 · 蜕言之间</title>
+    <title>泪纪蛇闻 · 文稿与实体梦向</title>
     <style>
         :root {
-            --bg: #1b1a17;
-            --surface: #24221e;
-            --surface-light: #2c2924;
-            --gold: #b8a07a;
-            --gold-dim: #8a7558;
-            --gold-pale: #d4c5a9;
-            --text: #e6dfd4;
-            --text-dim: #a09889;
-            --text-muted: #6b6358;
-            --border: #353028;
-            --border-light: #3e3830;
-            --radius: 6px;
-            --radius-sm: 3px;
-            --transition: 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --bg: #0b100d;
+            --card-bg: #0e1611;
+            --border: #18261e;
+            --text: #c4cdc7;
+            --text-bright: #dfe5e1;
+            --text-soft: #8c9a91;
+            --text-faint: #5f6e65;
+            --accent: #9fb3a6;
+            --accent-warm: #b8c9bd;
+            --divider: #1a2b20;
+            --nav-height: 60px;
+            --spacing-md: 1.2rem;
+            --spacing-lg: 2.5rem;
+            --spacing-xl: 4rem;
+            --font-serif: "Noto Serif SC", "Source Han Serif SC", "STSong", "Songti SC", "SimSun", serif;
+            --font-mono: "SF Mono", "Consolas", "Menlo", monospace;
+            --transition: 0.35s cubic-bezier(0.22, 0.1, 0.1, 1);
         }
 
         * {
@@ -30,638 +33,577 @@
 
         html {
             scroll-behavior: smooth;
-            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            scroll-padding-top: var(--nav-height);
         }
 
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
-            line-height: 1.7;
+            font-family: var(--font-serif);
+            line-height: 1.8;
             letter-spacing: 0.03em;
             min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             background-image:
-                radial-gradient(ellipse at 50% 0%, rgba(184, 160, 122, 0.04) 0%, transparent 60%),
-                radial-gradient(ellipse at 50% 100%, rgba(184, 160, 122, 0.03) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 40%, rgba(160, 140, 100, 0.025) 0%, transparent 55%);
+                radial-gradient(ellipse at 50% 5%, rgba(25, 50, 38, 0.2) 0%, transparent 55%),
+                radial-gradient(ellipse at 85% 20%, rgba(18, 38, 28, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 15% 80%, rgba(15, 32, 22, 0.06) 0%, transparent 50%);
+            background-attachment: fixed;
         }
 
-        body::before {
+        /* 极淡蛇形水印 */
+        body::after {
             content: '';
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.025;
-            background-image: repeating-linear-gradient(0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(180, 160, 130, 0.5) 2px,
-                    rgba(180, 160, 130, 0.5) 2.5px);
-            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+            opacity: 0.018;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 1200'%3E%3Cpath d='M180 180 Q340 130 380 260 T360 480 T430 680 T330 880' stroke='%239fb3a6' fill='none' stroke-width='1.1' stroke-linecap='round'/%3E%3Cpath d='M520 280 Q450 230 470 380 T490 580 T430 730 T470 900' stroke='%239fb3a6' fill='none' stroke-width='0.9' stroke-linecap='round'/%3E%3Cpath d='M620 400 Q560 360 580 480 T600 650 T550 800 T580 950' stroke='%239fb3a6' fill='none' stroke-width='0.7' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-size: cover;
+            background-position: center;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 28px;
+        /* ========== 导航栏 ========== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--nav-height);
+            background: rgba(11, 16, 13, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            transition: background 0.3s;
+        }
+
+        .nav.scrolled {
+            background: rgba(11, 16, 13, 0.96);
+            box-shadow: 0 1px 20px rgba(0, 0, 0, 0.35);
+        }
+
+        .nav a {
+            color: var(--text-soft);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            position: relative;
+            padding: 0.3rem 0;
+            transition: color var(--transition);
+        }
+
+        .nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 1px;
+            background: var(--accent-warm);
+            transition: width var(--transition);
+        }
+
+        .nav a:hover {
+            color: var(--accent-warm);
+        }
+        .nav a:hover::after {
+            width: 100%;
+        }
+
+        .nav-brand {
+            font-family: var(--font-serif);
+            font-size: 0.85rem;
+            letter-spacing: 0.2em;
+            color: var(--accent-warm) !important;
+            font-weight: 400;
+        }
+
+        @media (max-width: 600px) {
+            .nav {
+                gap: 0.8rem;
+                padding: 0 0.5rem;
+            }
+            .nav a {
+                font-size: 0.65rem;
+                letter-spacing: 0.06em;
+            }
+            .nav-brand {
+                font-size: 0.7rem;
+                letter-spacing: 0.14em;
+            }
+        }
+
+        /* ========== 主体 ========== */
+        .main {
             position: relative;
             z-index: 1;
+            padding-top: var(--nav-height);
         }
 
-        .header {
+        /* ========== 区块容器 ========== */
+        .section {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) 1.5rem;
+        }
+
+        /* 区块间隔 */
+        .section-spacer {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            opacity: 0.3;
+            height: 40px;
+        }
+        .spacer-line {
+            flex: 1;
+            max-width: 80px;
+            height: 1px;
+            background: var(--divider);
+        }
+        .spacer-snake {
+            width: 36px;
+            height: 14px;
+            opacity: 0.7;
+        }
+
+        /* ========== 首页封面 ========== */
+        .hero {
             text-align: center;
-            padding: 72px 0 40px;
+            padding: 6rem 1.5rem 3rem;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .hero-mark {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 1.2rem;
             position: relative;
         }
-
-        .header-ornament {
-            display: block;
-            margin: 0 auto 28px;
-            width: 42px;
-            height: 42px;
-            opacity: 0.55;
-            position: relative;
-        }
-
-        .header-ornament::before {
+        .hero-mark::before {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(45deg);
-            width: 16px;
-            height: 16px;
-            border: 1.5px solid var(--gold-dim);
-            border-radius: 1px;
-            opacity: 0.8;
+            width: 22px;
+            height: 22px;
+            border: 1px solid var(--accent);
+            opacity: 0.5;
         }
-        .header-ornament::after {
+        .hero-mark::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 28px;
-            height: 28px;
-            border: 0.5px solid var(--gold-dim);
-            border-radius: 50%;
-            opacity: 0.4;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            opacity: 0.5;
         }
-
-        .brand-name {
-            font-family: "Noto Serif SC", "STSong", "Songti SC", "SimSun", "KaiTi", "STKaiti", "楷体", "华文楷体", serif;
-            font-size: clamp(2rem, 4.5vw, 2.8rem);
+        .hero-title {
+            font-family: var(--font-serif);
+            font-size: clamp(2.4rem, 5.5vw, 3.2rem);
             font-weight: 400;
+            letter-spacing: 0.28em;
+            color: var(--text-bright);
+            text-shadow: 0 0 40px rgba(170, 200, 180, 0.1);
+            margin-bottom: 0.6rem;
+        }
+        .hero-sub {
+            font-size: 0.85rem;
             letter-spacing: 0.16em;
-            color: var(--gold-pale);
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .brand-sub {
-            font-family: "Noto Serif SC", "STSong", "Songti SC", "SimSun", "KaiTi", "STKaiti", "楷体", "华文楷体", serif;
-            font-size: 1rem;
-            letter-spacing: 0.18em;
-            color: var(--text-dim);
-            font-weight: 300;
-            margin-bottom: 6px;
-        }
-
-        .brand-whisper {
-            font-size: 0.8rem;
-            letter-spacing: 0.2em;
-            color: var(--text-muted);
-            font-weight: 300;
+            color: var(--text-soft);
             font-style: italic;
         }
-
-        .header-line {
-            width: 60px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-            margin: 22px auto 0;
-            border: none;
-        }
-
-        .section {
-            margin: 48px 0 36px;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-
-        .section-icon {
+        .hero-scroll {
             display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--gold-dim);
-            border-radius: 50%;
-            flex-shrink: 0;
-            opacity: 0.7;
-        }
-
-        .section-title {
-            font-family: "Noto Serif SC", "STSong", "Songti SC", "SimSun", "KaiTi", "STKaiti", "楷体", "华文楷体", serif;
-            font-size: 1.35rem;
-            font-weight: 400;
-            letter-spacing: 0.1em;
-            color: var(--gold-pale);
-        }
-
-        .section-subtitle {
-            font-size: 0.78rem;
+            margin-top: 2rem;
+            font-size: 0.65rem;
             letter-spacing: 0.14em;
-            color: var(--text-muted);
-            font-weight: 300;
-            font-style: italic;
-            margin-left: 4px;
+            color: var(--text-faint);
+            animation: fadeHint 3s ease-in-out infinite;
+        }
+        @keyframes fadeHint {
+            0%,100% { opacity: 0.35; }
+            50% { opacity: 0.7; }
         }
 
-        .section-divider {
-            width: 100%;
-            height: 0.5px;
-            background: var(--border);
-            margin: 10px 0 24px;
-            border: none;
-            opacity: 0.6;
+        /* ========== 区块标题 ========== */
+        .section-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
         }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-            gap: 14px;
-        }
-
-        .cards-grid.two-col {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        .cards-grid.five-col {
-            grid-template-columns: repeat(5, 1fr);
-        }
-
-        .card {
-            background: var(--surface);
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius);
-            padding: 22px 18px 20px;
-            position: relative;
-            transition: all var(--transition);
-            cursor: default;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 0.5px;
-            background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-            opacity: 0;
-            transition: opacity var(--transition);
-        }
-
-        .card:hover {
-            background: var(--surface-light);
-            border-color: var(--border-light);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.2);
-        }
-        .card:hover::before {
-            opacity: 0.7;
-        }
-
-        .card-id {
-            font-family: "Noto Serif SC", "STSong", "Songti SC", "SimSun", "KaiTi", "STKaiti", "楷体", "华文楷体", serif;
-            font-size: 0.95rem;
-            letter-spacing: 0.1em;
-            color: var(--gold-pale);
+        .section-title {
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            letter-spacing: 0.14em;
+            color: var(--accent-warm);
             font-weight: 400;
-            line-height: 1.2;
-            position: relative;
-            display: inline-block;
-            width: fit-content;
+            text-transform: uppercase;
         }
-
-        .card-id::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 0.5px;
-            background: var(--gold-dim);
-            opacity: 0;
-            transition: opacity var(--transition);
-            border-radius: 1px;
-        }
-        .card:hover .card-id::after {
-            opacity: 0.5;
-        }
-
-        .card-desc {
-            font-size: 0.82rem;
-            color: var(--text-dim);
-            letter-spacing: 0.04em;
-            line-height: 1.5;
+        .section-title .sub {
+            display: block;
+            font-size: 0.6rem;
+            letter-spacing: 0.22em;
+            color: var(--text-faint);
+            margin-top: 3px;
             font-weight: 300;
         }
 
-        .card-price {
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            letter-spacing: 0.06em;
-            font-weight: 300;
-            margin-top: auto;
-            padding-top: 4px;
-            border-top: 0.5px solid var(--border);
-            font-style: italic;
-        }
-
-        .card-note {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
-            font-weight: 300;
-            opacity: 0.7;
-        }
-
-        .typesetting-row {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-            margin-top: 14px;
-        }
-        .type-card {
-            flex: 1;
-            min-width: 150px;
-            background: var(--surface);
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px 14px;
-            transition: all var(--transition);
-            position: relative;
-        }
-        .type-card:hover {
-            background: var(--surface-light);
-            border-color: var(--border-light);
-            transform: translateY(-1px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-        .type-card .card-id {
-            font-size: 0.88rem;
-        }
-        .type-card .card-desc {
-            font-size: 0.75rem;
-            margin-top: 4px;
-        }
-
-        .entity-card .card-icon-hint {
-            font-size: 1.6rem;
-            opacity: 0.3;
-            margin-bottom: 2px;
-            letter-spacing: 0;
-            line-height: 1;
-            color: var(--gold-dim);
-            transition: opacity var(--transition);
-        }
-        .entity-card:hover .card-icon-hint {
-            opacity: 0.55;
-        }
-
-        .notes-section {
-            margin-top: 48px;
-            padding: 28px 24px;
-            background: var(--surface);
-            border: 0.5px solid var(--border);
-            border-radius: var(--radius);
-            position: relative;
-        }
-        .notes-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 24px;
-            right: 24px;
-            height: 0.5px;
-            background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
-            opacity: 0.5;
-        }
-
-        .notes-grid {
+        /* ========== 卡片网格 ========== */
+        .card-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px 32px;
+            gap: 1px;
+            background: var(--divider);
+            border: 1px solid var(--divider);
+            overflow: hidden;
+            border-radius: 2px;
         }
-
-        .notes-col h4 {
-            font-family: "Noto Serif SC", "STSong", "Songti SC", "SimSun", "KaiTi", "STKaiti", "楷体", "华文楷体", serif;
-            font-size: 0.9rem;
-            letter-spacing: 0.08em;
-            color: var(--gold-pale);
-            font-weight: 400;
-            margin-bottom: 10px;
-        }
-        .notes-col ul {
-            list-style: none;
-            padding: 0;
-        }
-        .notes-col li {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            letter-spacing: 0.04em;
-            line-height: 1.8;
-            position: relative;
-            padding-left: 16px;
-            font-weight: 300;
-        }
-        .notes-col li::before {
-            content: '—';
-            position: absolute;
-            left: 0;
-            color: var(--gold-dim);
-            opacity: 0.5;
-            font-size: 0.65rem;
-            top: 1px;
-        }
-
-        .footer {
+        .card {
+            background: var(--card-bg);
+            padding: 2rem 1.8rem;
             text-align: center;
-            padding: 48px 0 40px;
-            position: relative;
-        }
-        .footer-line {
-            width: 40px;
-            height: 0.5px;
-            background: var(--border);
-            margin: 0 auto 18px;
+            transition: all var(--transition);
+            cursor: default;
             border: none;
-            opacity: 0.5;
-        }
-        .footer-text {
-            font-size: 0.7rem;
-            letter-spacing: 0.12em;
-            color: var(--text-muted);
-            font-weight: 300;
-            font-style: italic;
-        }
-        .footer-id {
-            font-family: "Noto Serif SC", "STSong", "Songti SC", "SimSun", "KaiTi", "STKaiti", "楷体", "华文楷体", serif;
-            font-size: 0.78rem;
-            letter-spacing: 0.14em;
-            color: var(--gold-dim);
-            margin-top: 6px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 16px;
-            }
-            .header {
-                padding: 48px 0 28px;
-            }
-            .brand-name {
-                font-size: 1.7rem;
-                letter-spacing: 0.12em;
-            }
-            .cards-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            .cards-grid.five-col {
-                grid-template-columns: 1fr 1fr;
-            }
-            .cards-grid.two-col {
-                grid-template-columns: 1fr 1fr;
-            }
-            .card {
-                padding: 16px 14px 14px;
-            }
-            .card-id {
-                font-size: 0.85rem;
-            }
-            .card-desc {
-                font-size: 0.74rem;
-            }
-            .card-price {
-                font-size: 0.7rem;
-            }
-            .notes-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            .typesetting-row {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .section-title {
-                font-size: 1.15rem;
-            }
-            .section {
-                margin: 32px 0 24px;
-            }
-        }
-
-        @media (max-width: 420px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
-            .cards-grid.five-col {
-                grid-template-columns: 1fr 1fr;
-            }
-            .cards-grid.two-col {
-                grid-template-columns: 1fr;
-            }
-            .brand-name {
-                font-size: 1.5rem;
-            }
-            .header {
-                padding: 36px 0 20px;
-            }
-            .card {
-                padding: 14px 12px 12px;
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(18px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .card,
-        .type-card {
-            animation: fadeInUp 0.7s ease forwards;
-            opacity: 0;
+            animation: cardIn 0.6s ease backwards;
         }
         .card:nth-child(1) { animation-delay: 0.05s; }
         .card:nth-child(2) { animation-delay: 0.12s; }
         .card:nth-child(3) { animation-delay: 0.19s; }
         .card:nth-child(4) { animation-delay: 0.26s; }
         .card:nth-child(5) { animation-delay: 0.33s; }
-        .card:nth-child(6) { animation-delay: 0.4s; }
-        .notes-section {
-            animation: fadeInUp 0.7s ease forwards;
-            animation-delay: 0.3s;
-            opacity: 0;
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        ::selection {
-            background: rgba(184, 160, 122, 0.25);
-            color: var(--gold-pale);
+        .card:hover {
+            background: #111c16;
+            box-shadow: inset 0 0 0 1px rgba(150, 180, 160, 0.15);
         }
-        ::-moz-selection {
-            background: rgba(184, 160, 122, 0.25);
-            color: var(--gold-pale);
+        .card-id {
+            display: block;
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            letter-spacing: 0.1em;
+            color: var(--accent-warm);
+            margin-bottom: 0.4rem;
+        }
+        .card-desc {
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            letter-spacing: 0.04em;
+            margin-bottom: 0.2rem;
+        }
+        .card-price {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: #cbd8cf;
+            letter-spacing: 0.02em;
+            margin-top: 0.3rem;
+        }
+        .card-note {
+            font-size: 0.65rem;
+            color: var(--text-faint);
+            letter-spacing: 0.03em;
+            margin-top: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            .card {
+                padding: 1.8rem 1.2rem;
+            }
+            .section {
+                padding: 2.5rem 0.8rem;
+            }
+            .hero {
+                padding: 4rem 0.8rem 2rem;
+            }
+            .hero-title {
+                font-size: 2rem;
+                letter-spacing: 0.18em;
+            }
+        }
+
+        /* ========== 排版说明 ========== */
+        .typeset-bar {
+            text-align: center;
+            font-size: 0.72rem;
+            color: var(--text-soft);
+            letter-spacing: 0.05em;
+            padding: 0.8rem 1rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid var(--divider);
+            border-bottom: 1px solid var(--divider);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.8rem;
+        }
+        .typeset-bar span {
+            white-space: nowrap;
+        }
+        .typeset-bar strong {
+            color: var(--accent-warm);
+            font-weight: 400;
+        }
+
+        /* ========== 实体业务统一说明 ========== */
+        .entity-note {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-faint);
+            margin-top: -1rem;
+            margin-bottom: 1.8rem;
+            font-style: italic;
+            letter-spacing: 0.05em;
+        }
+
+        /* ========== 须知卡片 ========== */
+        .notice {
+            background: var(--card-bg);
+            border: 1px solid var(--divider);
+            border-radius: 2px;
+            padding: 2rem 2rem;
+        }
+        .notice-list {
+            list-style: none;
+            padding: 0;
+        }
+        .notice-list li {
+            font-size: 0.75rem;
+            color: var(--text-soft);
+            letter-spacing: 0.03em;
+            padding: 0.3rem 0 0.3rem 1rem;
+            position: relative;
+            line-height: 1.7;
+        }
+        .notice-list li::before {
+            content: '—';
+            position: absolute;
+            left: 0;
+            top: 0.3rem;
+            color: var(--text-faint);
+            font-size: 0.55rem;
+            opacity: 0.5;
+        }
+        .notice-sublist {
+            list-style: none;
+            padding-left: 1rem;
+            margin-top: 2px;
+        }
+        .notice-sublist li {
+            font-size: 0.7rem;
+            color: var(--text-faint);
+            padding: 2px 0 2px 0.7rem;
+        }
+        .notice-sublist li::before {
+            content: '·';
+            left: 0;
+            top: 2px;
+            font-size: 0.5rem;
+        }
+
+        /* ========== 底部 ========== */
+        .footer {
+            text-align: center;
+            padding: 3rem 1.5rem 2.5rem;
+            font-size: 0.7rem;
+            color: var(--text-faint);
+            letter-spacing: 0.1em;
+            opacity: 0.5;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .footer-line {
+            width: 40px;
+            height: 1px;
+            background: var(--divider);
+            margin: 0 auto 0.8rem;
+        }
+        .footer-eng {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.18em;
+            margin-top: 0.4rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <span class="header-ornament"></span>
-            <h1 class="brand-name">泪 纪 蛇 闻</h1>
-            <p class="brand-sub">倦纪蛇闻</p>
-            <p class="brand-whisper">蜕言之间</p>
-            <hr class="header-line">
-        </header>
+    <nav class="nav" id="navbar">
+        <a href="#home" class="nav-brand">泪纪蛇闻</a>
+        <a href="#manuscript">文稿约稿</a>
+        <a href="#tangible">实体梦向</a>
+        <a href="#notice">须知</a>
+    </nav>
 
+    <div class="main">
+        <!-- 封面 -->
+        <section class="hero" id="home">
+            <div class="hero-mark"></div>
+            <h1 class="hero-title">泪纪蛇闻</h1>
+            <p class="hero-sub">蜕言执笔 · 寄鳞于物</p>
+            <p class="hero-scroll">▼ 向下浏览 ▼</p>
+        </section>
+
+        <!-- 间隔 -->
+        <div class="section-spacer">
+            <span class="spacer-line"></span>
+            <svg class="spacer-snake" viewBox="0 0 36 14">
+                <path d="M2 7 Q10 2 18 7 T34 7" stroke="var(--accent)" fill="none" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="3 2"/>
+            </svg>
+            <span class="spacer-line"></span>
+        </div>
+
+        <!-- 文稿约稿 -->
         <section class="section" id="manuscript">
             <div class="section-header">
-                <span class="section-icon"></span>
-                <span class="section-title">蜕言执笔</span>
-                <span class="section-subtitle">文稿约稿</span>
+                <h2 class="section-title">文稿约稿<span class="sub">Manuscript</span></h2>
             </div>
-            <hr class="section-divider">
-
-            <div class="cards-grid two-col">
+            <div class="card-grid">
                 <div class="card">
-                    <span class="card-id">蜕言帖</span>
-                    <span class="card-desc">超短篇 · 200–600字</span>
-                    <span class="card-price">¥5 – 20 / p</span>
+                    <span class="card-id">蜕言存稿</span>
+                    <p class="card-desc">超短篇 · 200–600字</p>
+                    <p class="card-price">¥5 – 20 / p</p>
                 </div>
                 <div class="card">
-                    <span class="card-id">蜕言笺</span>
-                    <span class="card-desc">短篇 · 约800字</span>
-                    <span class="card-price">¥25 / p</span>
+                    <span class="card-id">鳞寂纪</span>
+                    <p class="card-desc">短篇 · 约800字</p>
+                    <p class="card-price">¥25 / p</p>
                 </div>
                 <div class="card">
-                    <span class="card-id">蜕鳞录</span>
-                    <span class="card-desc">长篇 · 1500字以上</span>
-                    <span class="card-price">¥35 / p</span>
+                    <span class="card-id">烬书纪</span>
+                    <p class="card-desc">长篇 · 1500字以上</p>
+                    <p class="card-price">¥35 / p</p>
                 </div>
                 <div class="card">
                     <span class="card-id">拾鳞记</span>
-                    <span class="card-desc">论坛体 / 朋友圈 / 捡手机文学</span>
-                    <span class="card-price">价格另计</span>
+                    <p class="card-desc">论坛体 / 朋友圈 / 捡手机文学</p>
+                    <p class="card-price">价格另计</p>
                 </div>
             </div>
-
-            <div class="typesetting-row">
-                <div class="type-card">
-                    <span class="card-id">蜕言裁字</span>
-                    <span class="card-desc">普排 · 一图微素材<br>短篇无需加价 · 长篇 +¥1</span>
-                </div>
-                <div class="type-card">
-                    <span class="card-id">蜕言造物</span>
-                    <span class="card-desc">精排 · 多图多素材多风格<br>短篇 +¥1 · 长篇 +¥3</span>
-                </div>
+            <div class="typeset-bar">
+                <span><strong>普排</strong>（一图微素材）短篇无需加价 · 长篇 +¥1</span>
+                <span><strong>精排</strong>（多图多素材）短篇 +¥1 · 长篇 +¥3</span>
             </div>
-            <span class="card-note" style="display:inline-block;margin-top:8px;">※ 约稿默认含排版</span>
         </section>
 
-        <section class="section" id="entity">
-            <div class="section-header">
-                <span class="section-icon"></span>
-                <span class="section-title">寄鳞于物</span>
-                <span class="section-subtitle">实体梦向业务</span>
-            </div>
-            <hr class="section-divider">
-
-            <div class="cards-grid five-col">
-                <div class="card entity-card">
-                    <span class="card-icon-hint">✉</span>
-                    <span class="card-id">寄鳞书</span>
-                    <span class="card-desc">手写信件</span>
-                    <span class="card-note">字字手写 · 温度可触</span>
-                </div>
-                <div class="card entity-card">
-                    <span class="card-icon-hint">📓</span>
-                    <span class="card-id">蜕言记</span>
-                    <span class="card-desc">日记本</span>
-                    <span class="card-note">拼贴 / 纯文字 / 文字+微手绘</span>
-                </div>
-                <div class="card entity-card">
-                    <span class="card-icon-hint">📖</span>
-                    <span class="card-id">骨间书</span>
-                    <span class="card-desc">共读一本书</span>
-                    <span class="card-note">共享阅读印记</span>
-                </div>
-                <div class="card entity-card">
-                    <span class="card-icon-hint">🕯</span>
-                    <span class="card-id">泪骨记</span>
-                    <span class="card-desc">情绪盒子</span>
-                    <span class="card-note">收纳心绪的容器</span>
-                </div>
-                <div class="card entity-card">
-                    <span class="card-icon-hint">📝</span>
-                    <span class="card-id">蜕言余</span>
-                    <span class="card-desc">日常便签</span>
-                    <span class="card-note">零碎日常 · 片羽留存</span>
-                </div>
-            </div>
-            <span class="card-note" style="display:inline-block;margin-top:8px;">※ 实体业务具体价格根据实际情况决定 · 字数价格参考约稿价格</span>
-        </section>
-
-        <div class="notes-section">
-            <div class="notes-grid">
-                <div class="notes-col">
-                    <h4>蜕言裁字 · 文稿须知</h4>
-                    <ul>
-                        <li>约稿默认含排版，普排短篇无需加价</li>
-                        <li>精排短篇 +¥1，长篇 +¥3</li>
-                        <li>论坛体 / 朋友圈 / 捡手机文学价格另计</li>
-                        <li>下单后非我方原因不退不换</li>
-                    </ul>
-                </div>
-                <div class="notes-col">
-                    <h4>寄鳞于物 · 实体须知</h4>
-                    <ul>
-                        <li>附赠礼品可自选或由我选定，随赠寄语</li>
-                        <li>赠品不另收礼物费，需支付打包费</li>
-                        <li>赠品数量随机，费用不含材料购买费</li>
-                        <li>可仿签名，不仿字体</li>
-                        <li>实体业务先发 1p 预览确认</li>
-                        <li>全部不包邮，可自选邮寄方式</li>
-                    </ul>
-                </div>
-            </div>
+        <!-- 间隔 -->
+        <div class="section-spacer">
+            <span class="spacer-line"></span>
+            <svg class="spacer-snake" viewBox="0 0 36 14">
+                <path d="M2 7 Q10 2 18 7 T34 7" stroke="var(--accent)" fill="none" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="3 2"/>
+            </svg>
+            <span class="spacer-line"></span>
         </div>
 
+        <!-- 实体梦向 -->
+        <section class="section" id="tangible">
+            <div class="section-header">
+                <h2 class="section-title">实体梦向业务<span class="sub">Tangible Dream</span></h2>
+                <p class="entity-note">具体价格依实际情况，字数参考约稿价格</p>
+            </div>
+            <div class="card-grid">
+                <div class="card">
+                    <span class="card-id">寄鳞</span>
+                    <p class="card-desc">手写信件</p>
+                </div>
+                <div class="card">
+                    <span class="card-id">倦鳞存</span>
+                    <p class="card-desc">日记本</p>
+                    <p class="card-note">拼贴 / 纯文字 / 文字＋微手绘</p>
+                </div>
+                <div class="card">
+                    <span class="card-id">骨间书</span>
+                    <p class="card-desc">共读一本书</p>
+                </div>
+                <div class="card">
+                    <span class="card-id">泪骨烬</span>
+                    <p class="card-desc">情绪盒子</p>
+                </div>
+                <div class="card">
+                    <span class="card-id">蜕言帖</span>
+                    <p class="card-desc">日常便签</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 间隔 -->
+        <div class="section-spacer">
+            <span class="spacer-line"></span>
+            <svg class="spacer-snake" viewBox="0 0 36 14">
+                <path d="M2 7 Q10 2 18 7 T34 7" stroke="var(--accent)" fill="none" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="3 2"/>
+            </svg>
+            <span class="spacer-line"></span>
+        </div>
+
+        <!-- 须知 -->
+        <section class="section" id="notice">
+            <div class="section-header">
+                <h2 class="section-title">业务须知<span class="sub">Notes</span></h2>
+            </div>
+            <div class="notice">
+                <ul class="notice-list">
+                    <li>
+                        <strong style="color:var(--accent-warm);font-weight:400;">约稿默认含排版</strong>
+                        <ul class="notice-sublist">
+                            <li>普排（一图微素材）：短篇无需加价，长篇 +¥1</li>
+                            <li>精排（多图多素材多风格）：短篇 +¥1，长篇 +¥3</li>
+                        </ul>
+                    </li>
+                    <li>实体业务附赠礼品（自选/我选），随赠寄语，<em>不另收礼物费用</em></li>
+                    <li>实体业务需<strong style="color:var(--accent-warm);font-weight:400;">打包费</strong>，赠品数量随机；费用<strong>不含</strong>材料购买费</li>
+                    <li>可<strong style="color:var(--accent-warm);font-weight:400;">仿签名</strong>，不仿字体；实体业务先发 <strong>1p 预览</strong></li>
+                    <li>下单后非我方原因<strong style="color:var(--accent-warm);font-weight:400;">不退不换</strong>；全部<strong>不包邮</strong>，可自选邮寄方式</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- 底部 -->
         <footer class="footer">
-            <hr class="footer-line">
-            <p class="footer-text">泪纪蛇闻 · 蜕言之间</p>
-            <p class="footer-id">倦纪蛇闻 &nbsp;·&nbsp; 鳞书寄倦 &nbsp;·&nbsp; 泪缠旧闻</p>
-            <p class="footer-text" style="margin-top:10px;">以鳞为墨，以泪纪闻。感谢驻足。</p>
+            <div class="footer-line"></div>
+            泪纪蛇闻
+            <div class="footer-eng">Lamentode</div>
         </footer>
     </div>
+
+    <script>
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 60) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.getElementById(this.getAttribute('href').substring(1));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
 </body>
 </html>
