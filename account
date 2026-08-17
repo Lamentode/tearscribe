@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>应降的账页 · 独立记账</title>
+    <style>
+        :root {
+            --bg: #0c0f0d;
+            --surface: #141a15;
+            --surface-light: #1a221c;
+            --gold: #b8a07a;
+            --gold-dim: #8a7558;
+            --gold-pale: #d4c5a9;
+            --text: #e2ddd4;
+            --text-dim: #a49d91;
+            --text-muted: #6b655b;
+            --border: #2a332b;
+            --border-light: #3a453c;
+            --danger: #b85c5c;
+            --success: #7a9a7a;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            --font-serif: "Noto Serif SC", "STSong", "Songti SC", "KaiTi", serif;
+            --font-hand: "KaiTi", "STKaiti", "楷体", "华文楷体", serif;
+            --radius: 6px;
+            --transition: 0.3s ease;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-serif);
+            line-height: 1.8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-image: radial-gradient(ellipse at 50% 20%, rgba(184, 160, 122, 0.07) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(140, 160, 150, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .container {
+            width: 100%;
+            max-width: 540px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 40px;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
+        .header h1 {
+            font-size: 1.6rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            color: var(--gold-pale);
+            text-shadow: 0 0 20px rgba(184, 160, 122, 0.15);
+        }
+        .header .sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.3em;
+            margin-top: 4px;
+        }
+
+        /* 余额设置 */
+        .balance-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .balance-card label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+        .balance-card input {
+            flex: 1;
+            min-width: 80px;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: var(--gold-pale);
+            font-size: 1rem;
+            font-family: var(--font-serif);
+            letter-spacing: 0.05em;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100px;
+        }
+        .balance-card input:focus {
+            border-color: var(--gold-dim);
+        }
+        .balance-card .set-btn {
+            background: var(--gold-dim);
+            border: none;
+            color: #1e1b18;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-serif);
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .balance-card .set-btn:hover {
+            background: var(--gold-pale);
+        }
+        .balance-display {
+            width: 100%;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 0.06em;
+            text-align: right;
+            margin-top: 4px;
+        }
+        .balance-display strong {
+            color: var(--gold-pale);
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+        /* 记账表单 */
+        .entry-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .amount-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .amount-row label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+        .amount-row input {
+            flex: 1;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-size: 1.1rem;
+            font-family: var(--font-serif);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .amount-row input:focus {
+            border-color: var(--gold-dim);
+        }
+        .category-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .cat-btn {
+            flex: 1;
+            min-width: 48px;
+            background: var(--surface-light);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-serif);
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            letter-spacing: 0.04em;
+            user-select: none;
+            -webkit-user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+        .cat-btn .cat-icon {
+            font-size: 1.1rem;
+        }
+        .cat-btn:hover {
+            border-color: var(--gold-dim);
+            color: var(--gold-pale);
+        }
+        .cat-btn.active {
+            border-color: var(--gold);
+            background: #1f261f;
+            color: var(--gold-pale);
+            box-shadow: 0 0 0 1px var(--gold);
+        }
+        .submit-btn {
+            background: var(--gold);
+            border: none;
+            color: #1e1b18;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            transition: all 0.2s;
+        }
+        .submit-btn:hover {
+            background: var(--gold-pale);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(184, 160, 122, 0.2);
+        }
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 清单区 */
+        .list-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            color: var(--gold-pale);
+        }
+        .list-header .count {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .list-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .list-items::-webkit-scrollbar {
+            width: 3px;
+        }
+        .list-items::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 2px;
+        }
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            background: var(--surface-light);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            animation: itemIn 0.35s ease;
+        }
+        @keyframes itemIn {
+            from {
+                opacity: 0;
+                transform: translateX(-12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .list-item .item-icon {
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        .list-item .item-cat {
+            min-width: 30px;
+            color: var(--gold-pale);
+            font-size: 0.65rem;
+        }
+        .list-item .item-amount {
+            margin-left: auto;
+            font-size: 0.75rem;
+            color: var(--text);
+            white-space: nowrap;
+        }
+        .list-item .item-time {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .list-item .item-delete {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.7rem;
+            padding: 2px 4px;
+            transition: color 0.2s;
+            font-family: var(--font-serif);
+        }
+        .list-item .item-delete:hover {
+            color: var(--danger);
+        }
+        .empty-list {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            padding: 20px 0;
+            font-style: italic;
+        }
+
+        /* 日期分组 */
+        .date-group {
+            margin-bottom: 6px;
+        }
+        .date-header {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 6px;
+        }
+
+        /* 结算区 */
+        .settle-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .settle-btn {
+            background: transparent;
+            border: 1px solid var(--gold-dim);
+            color: var(--gold-pale);
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-serif);
+            font-size: 0.9rem;
+            letter-spacing: 0.15em;
+            transition: all 0.2s;
+        }
+        .settle-btn:hover {
+            background: var(--gold-dim);
+            color: #1e1b18;
+        }
+        .settle-result {
+            background: var(--surface-light);
+            border-radius: 4px;
+            padding: 16px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            display: none;
+            animation: resultIn 0.5s ease;
+        }
+        .settle-result.active {
+            display: block;
+        }
+        @keyframes resultIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .settle-result .total-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .settle-result .total-line:last-child {
+            border-bottom: none;
+        }
+        .settle-result .total-line .label {
+            color: var(--text-muted);
+        }
+        .settle-result .total-line .value {
+            color: var(--text);
+            font-size: 0.85rem;
+        }
+        .settle-result .total-line .value.remaining {
+            color: var(--gold-pale);
+            font-size: 1rem;
+        }
+        .settle-result .total-line .value.negative {
+            color: var(--danger);
+        }
+
+        /* 历史统计 */
+        .stats-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .stats-header {
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            color: var(--gold-pale);
+            text-align: center;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        .stat-box {
+            background: var(--surface-light);
+            padding: 12px 8px;
+            text-align: center;
+            border-radius: 4px;
+        }
+        .stat-box .stat-num {
+            font-size: 1.1rem;
+            color: var(--gold-pale);
+            font-weight: 400;
+        }
+        .stat-box .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* 清空按钮 */
+        .clear-btn {
+            background: transparent;
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: var(--font-serif);
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+            transition: all 0.2s;
+            margin-left: auto;
+        }
+        .clear-btn:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* 动画 overlay */
+        .anim-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.15s;
+        }
+        .anim-overlay.active {
+            opacity: 1;
+        }
+        .anim-content {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            animation: popIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+        }
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.4);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.15);
+            }
+            70% {
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .anim-emoji {
+            font-size: 3.5rem;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+            animation: floatY 1.2s ease-in-out infinite;
+        }
+        @keyframes floatY {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+        .anim-quote {
+            font-size: 0.9rem;
+            color: var(--gold-pale);
+            letter-spacing: 0.1em;
+            background: rgba(20, 26, 21, 0.92);
+            padding: 12px 22px;
+            border-radius: 30px;
+            border: 1px solid var(--gold-dim);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+            max-width: 80vw;
+            font-family: var(--font-hand);
+            line-height: 1.6;
+            backdrop-filter: blur(8px);
+        }
+
+        /* 粒子动画 */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 199;
+            animation: particleFloat 1.8s ease-out forwards;
+            font-size: 1.2rem;
+            opacity: 0;
+        }
+        @keyframes particleFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0.5) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-120px) scale(1.3) rotate(40deg);
+            }
+        }
+
+        /* 结算动画 */
+        .settle-anim {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .settle-anim.active {
+            opacity: 1;
+        }
+        .settle-anim .settle-box {
+            background: rgba(20, 26, 21, 0.95);
+            border: 1px solid var(--gold-dim);
+            border-radius: 8px;
+            padding: 30px 40px;
+            text-align: center;
+            animation: settlePop 0.6s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+        @keyframes settlePop {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .settle-anim .settle-emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .settle-anim .settle-text {
+            font-size: 0.85rem;
+            color: var(--gold-pale);
+            letter-spacing: 0.1em;
+            line-height: 1.8;
+            font-family: var(--font-hand);
+        }
+
+        @media (max-width: 400px) {
+            .category-row {
+                gap: 4px;
+            }
+            .cat-btn {
+                padding: 6px 2px;
+                font-size: 0.6rem;
+            }
+            .cat-btn .cat-icon {
+                font-size: 0.9rem;
+            }
+            .container {
+                gap: 10px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>应降的账页</h1>
+            <div class="sub">蜕言之间 · 独立记账</div>
+        </div>
+
+        <!-- 余额设置 -->
+        <div class="balance-card">
+            <label>💰 可支配余额</label>
+            <input type="number" id="balanceInput" placeholder="设置金额..." value="" min="0" step="0.01">
+            <button class="set-btn" id="setBalanceBtn">设置</button>
+            <div class="balance-display">当前剩余：<strong id="balanceDisplay">¥0.00</strong></div>
+        </div>
+
+        <!-- 记账表单 -->
+        <div class="entry-card">
+            <div class="amount-row">
+                <label>📝 支出金额</label>
+                <input type="number" id="amountInput" placeholder="0.00" min="0.01" step="0.01">
+            </div>
+            <div class="category-row" id="categoryRow">
+                <div class="cat-btn" data-cat="food"><span class="cat-icon">🍜</span>食</div>
+                <div class="cat-btn" data-cat="transport"><span class="cat-icon">🚶</span>行</div>
+                <div class="cat-btn" data-cat="shopping"><span class="cat-icon">💎</span>物</div>
+                <div class="cat-btn" data-cat="entertainment"><span class="cat-icon">🎈</span>乐</div>
+                <div class="cat-btn" data-cat="book"><span class="cat-icon">📖</span>书</div>
+                <div class="cat-btn" data-cat="gift"><span class="cat-icon">💌</span>情</div>
+            </div>
+            <button class="submit-btn" id="addBtn">记下这笔</button>
+        </div>
+
+        <!-- 统计概览 -->
+        <div class="stats-card">
+            <div class="stats-header">📊 历史开销概览</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-num" id="statToday">¥0</div>
+                    <div class="stat-label">今日支出</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num" id="statWeek">¥0</div>
+                    <div class="stat-label">本周支出</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num" id="statTotal">¥0</div>
+                    <div class="stat-label">历史总支出</div>
+                </div>
+            </div>
+            <button class="clear-btn" id="clearAllBtn">🗑️ 清空全部历史</button>
+        </div>
+
+        <!-- 日清单 -->
+        <div class="list-card">
+            <div class="list-header">
+                <span>📋 历史清单</span>
+                <span class="count" id="listCount">共 0 笔</span>
+            </div>
+            <div class="list-items" id="listItems">
+                <div class="empty-list">还没有记录，今天也要好好过。</div>
+            </div>
+        </div>
+
+        <!-- 结算区 -->
+        <div class="settle-card">
+            <button class="settle-btn" id="settleBtn">🗂️ 结算今日</button>
+            <div class="settle-result" id="settleResult"></div>
+        </div>
+    </div>
+
+    <!-- 动画 overlay -->
+    <div class="anim-overlay" id="animOverlay">
+        <div class="anim-content">
+            <span class="anim-emoji" id="animEmoji">🍜</span>
+            <span class="anim-quote" id="animQuote">吃饱了，才有力气继续蜕皮。</span>
+        </div>
+    </div>
+
+    <!-- 结算动画 -->
+    <div class="settle-anim" id="settleAnim">
+        <div class="settle-box">
+            <div class="settle-emoji">🐍</div>
+            <div class="settle-text" id="settleText">今日已清算，余下的钱，也要好好花。</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ========== localStorage 数据持久化 ==========
+            const STORAGE_KEY = 'yingjiang_ledger_records';
+            const BALANCE_KEY = 'yingjiang_ledger_balance';
+
+            let balance = parseFloat(localStorage.getItem(BALANCE_KEY)) || 0;
+            let records = [];
+
+            // 从 localStorage 加载历史记录
+            function loadRecords() {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        records = JSON.parse(stored);
+                    } catch (e) {
+                        records = [];
+                    }
+                }
+            }
+
+            // 保存记录到 localStorage
+            function saveRecords() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+                localStorage.setItem(BALANCE_KEY, balance.toString());
+            }
+
+            // ========== 话术库 ==========
+            const categories = {
+                food: {
+                    name: '食',
+                    icon: '🍜',
+                    quotes: [
+                        '吃饱了，才有力气继续蜕皮。',
+                        '胃暖了，心就不会太冷。',
+                        '食物是身体的墨，写下的每一笔都算数。',
+                        '别饿着自己，蛇饿了也会咬人的。',
+                        '咀嚼声是人间烟火气，值得记一笔。',
+                        '一顿饭的时间，足够原谅今天一半的难过。',
+                        '吃掉今天的不开心，明天再重新长出来。',
+                        '胃里要有东西，夜里才不会做饿梦。',
+                        '吃下去的都变成了你，这很神奇不是吗？',
+                        '好好吃饭，是活着最温柔的仪式。'
+                    ],
+                    particles: ['🍜', '🍚', '🥢', '🍵', '🥟']
+                },
+                transport: {
+                    name: '行',
+                    icon: '🚶',
+                    quotes: [
+                        '走再远的路，也走不出自己。',
+                        '交通工具会载你到想去的地方，但风景要自己看。',
+                        '每一次出发，都像蜕去一层旧壳。',
+                        '路上的风会吹散一些心事，很划算。',
+                        '别怕迷路，迷路也是路的一部分。',
+                        '出发的时候，别忘了带上一片鳞。',
+                        '抵达不是目的，路上的你才是。',
+                        '这世界很大，大到可以装下所有想去的地方。',
+                        '移动是消耗，也是某种自由。',
+                        '走了那么久，别忘了回来。'
+                    ],
+                    particles: ['🚶', '🚌', '🚲', '🧭', '🗺️']
+                },
+                shopping: {
+                    name: '物',
+                    icon: '💎',
+                    quotes: [
+                        '买下的不只是一件东西，是当时想要它的自己。',
+                        '物品会变旧，但拥有过的心情不会。',
+                        '给自己买点好的，你值得。',
+                        '每件东西都是一片鳞，收藏得多了，就成了自己的壳。',
+                        '有些东西不需要理由，喜欢就是理由。',
+                        '买来的快乐很短暂，但短暂也是真的快乐。',
+                        '别屯太多，蜕皮的时候带不走的。',
+                        '物品进入生活的方式，也是生活的一部分。',
+                        '好东西会变成旧东西，但好心情不会。',
+                        '拥有的瞬间，是时间最温柔的停顿。'
+                    ],
+                    particles: ['💎', '🛍️', '✨', '📦', '🎁']
+                },
+                entertainment: {
+                    name: '乐',
+                    icon: '🎈',
+                    quotes: [
+                        '让自己开心，不是罪过。',
+                        '笑一笑，鳞片都会亮一点。',
+                        '快乐可以存起来，下次难过时取出来用。',
+                        '堕落一会儿怎么了，蛇也喜欢晒太阳。',
+                        '情绪需要通风口，别把自己憋坏了。',
+                        '好玩的事都值得记下来，像收集鳞片一样。',
+                        '开心的时候要好好开心，因为难熬的时候会想起来。',
+                        '把糟糕的日子都过成段子，也是一种本事。',
+                        '快乐是大人唯一可以合法收藏的糖。',
+                        '别问值不值，开心就值。'
+                    ],
+                    particles: ['🎈', '🎵', '🎮', '🌟', '🎪']
+                },
+                book: {
+                    name: '书',
+                    icon: '📖',
+                    quotes: [
+                        '读进脑子里的字，谁都偷不走。',
+                        '书是最安静的蛇，只会蜕皮，不会咬人。',
+                        '有些答案不在生活里，在书里。',
+                        '每读一本，就好像多活了一种人生。',
+                        '纸张的味道比想象中更接近永恒。',
+                        '在书里遇见的自己，比镜子里的更真实。',
+                        '学习不是投资，是某种更深的呼吸。',
+                        '书读多了，连寂寞都会变得有层次。',
+                        '书是前人蜕下的皮，里面藏着他们的骨头。',
+                        '读吧，字会带你到身体到不了的地方。'
+                    ],
+                    particles: ['📖', '📚', '✒️', '📜', '🔖']
+                },
+                gift: {
+                    name: '情',
+                    icon: '💌',
+                    quotes: [
+                        '送出去的从来不是礼物，是当时的那份心意。',
+                        '有些关系像旧书，翻得多了，就散了架。',
+                        '心意比东西值钱，但东西比心意扛得住时间。',
+                        '人情的债，是最轻也最重的那种。',
+                        '为重要的人花钱，是给自己攒福气。',
+                        '别让价签替你说爱。',
+                        '礼物是给未来的礼物，收下的人会记得当时。',
+                        '有些心意要趁热，冷了再送，就变味了。',
+                        '你送出去的东西，最后都会回到你身上。',
+                        '情分不是买卖，但记账是帮它被看见。'
+                    ],
+                    particles: ['💌', '❤️', '🌹', '🎀', '🤍']
+                }
+            };
+
+            // ========== DOM 元素 ==========
+            const balanceInput = document.getElementById('balanceInput');
+            const setBalanceBtn = document.getElementById('setBalanceBtn');
+            const balanceDisplay = document.getElementById('balanceDisplay');
+            const amountInput = document.getElementById('amountInput');
+            const categoryRow = document.getElementById('categoryRow');
+            const addBtn = document.getElementById('addBtn');
+            const listItems = document.getElementById('listItems');
+            const listCount = document.getElementById('listCount');
+            const settleBtn = document.getElementById('settleBtn');
+            const settleResult = document.getElementById('settleResult');
+            const animOverlay = document.getElementById('animOverlay');
+            const animEmoji = document.getElementById('animEmoji');
+            const animQuote = document.getElementById('animQuote');
+            const settleAnim = document.getElementById('settleAnim');
+            const settleText = document.getElementById('settleText');
+            const statToday = document.getElementById('statToday');
+            const statWeek = document.getElementById('statWeek');
+            const statTotal = document.getElementById('statTotal');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+
+            let selectedCategory = null;
+
+            // ========== 函数 ==========
+            function updateBalanceDisplay() {
+                balanceDisplay.textContent = `¥${balance.toFixed(2)}`;
+                if (balance > 0) balanceInput.value = balance;
+            }
+
+            function setBalance() {
+                const val = parseFloat(balanceInput.value);
+                if (isNaN(val) || val < 0) {
+                    alert('请输入有效的金额。');
+                    return;
+                }
+                balance = val;
+                saveRecords();
+                updateBalanceDisplay();
+                showSettleAnimation('💰 可支配余额已更新。\n要好好花，也要好好存。');
+            }
+
+            function selectCategory(cat) {
+                selectedCategory = cat;
+                document.querySelectorAll('.cat-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.cat === cat);
+                });
+            }
+
+            function randomQuote(cat) {
+                const quotes = categories[cat].quotes;
+                return quotes[Math.floor(Math.random() * quotes.length)];
+            }
+
+            function randomParticle(cat) {
+                const particles = categories[cat].particles;
+                return particles[Math.floor(Math.random() * particles.length)];
+            }
+
+            function showAnim(cat) {
+                const icon = categories[cat].icon;
+                const quote = randomQuote(cat);
+                animEmoji.textContent = icon;
+                animQuote.textContent = quote;
+                animOverlay.classList.add('active');
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => spawnParticle(cat), i * 100);
+                }
+                setTimeout(() => {
+                    animOverlay.classList.remove('active');
+                }, 1800);
+            }
+
+            function spawnParticle(cat) {
+                const particle = document.createElement('span');
+                particle.className = 'particle';
+                particle.textContent = randomParticle(cat);
+                particle.style.left = (30 + Math.random() * 40) + 'vw';
+                particle.style.top = (40 + Math.random() * 20) + 'vh';
+                particle.style.animationDuration = (1.2 + Math.random() * 0.8) + 's';
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 2500);
+            }
+
+            function addRecord() {
+                if (!selectedCategory) {
+                    alert('请先选择一个类别。');
+                    return;
+                }
+                const amount = parseFloat(amountInput.value);
+                if (isNaN(amount) || amount <= 0) {
+                    alert('请输入有效的支出金额。');
+                    return;
+                }
+                const now = new Date();
+                const record = {
+                    category: selectedCategory,
+                    amount: amount,
+                    timestamp: now.toISOString(),
+                    dateKey: now.toISOString().split('T')[0]
+                };
+                records.push(record);
+                saveRecords();
+                showAnim(selectedCategory);
+                amountInput.value = '';
+                renderAll();
+            }
+
+            function deleteRecord(index) {
+                records.splice(index, 1);
+                saveRecords();
+                renderAll();
+            }
+
+            function clearAll() {
+                if (records.length === 0) return;
+                if (confirm('确定要清空全部历史记录吗？此操作不可撤销。')) {
+                    records = [];
+                    saveRecords();
+                    renderAll();
+                    settleResult.classList.remove('active');
+                }
+            }
+
+            // 按日期分组渲染
+            function renderList() {
+                listItems.innerHTML = '';
+                if (records.length === 0) {
+                    listItems.innerHTML = '<div class="empty-list">还没有记录，今天也要好好过。</div>';
+                    listCount.textContent = '共 0 笔';
+                    return;
+                }
+                listCount.textContent = `共 ${records.length} 笔`;
+
+                // 按日期排序（新的在上）
+                const sorted = [...records].sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+                const grouped = {};
+                sorted.forEach(rec => {
+                    const key = rec.dateKey || rec.timestamp.split('T')[0];
+                    if (!grouped[key]) grouped[key] = [];
+                    grouped[key].push(rec);
+                });
+
+                Object.keys(grouped).forEach(dateKey => {
+                    const dateDiv = document.createElement('div');
+                    dateDiv.className = 'date-group';
+                    dateDiv.innerHTML = `<div class="date-header">📅 ${dateKey}</div>`;
+                    const itemsWrapper = document.createElement('div');
+                    itemsWrapper.className = 'list-items-group';
+
+                    grouped[dateKey].forEach(rec => {
+                        const origIndex = records.findIndex(r => r.timestamp === rec.timestamp && r.amount === rec.amount && r.category === rec.category);
+                        const timeStr = new Date(rec.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+                        const item = document.createElement('div');
+                        item.className = 'list-item';
+                        item.innerHTML = `
+                            <span class="item-icon">${categories[rec.category].icon}</span>
+                            <span class="item-cat">${categories[rec.category].name}</span>
+                            <span class="item-amount">¥${rec.amount.toFixed(2)}</span>
+                            <span class="item-time">${timeStr}</span>
+                            <button class="item-delete" data-orig-idx="${origIndex}">✕</button>
+                        `;
+                        item.querySelector('.item-delete').addEventListener('click', (e) => {
+                            deleteRecord(origIndex);
+                        });
+                        itemsWrapper.appendChild(item);
+                    });
+
+                    dateDiv.appendChild(itemsWrapper);
+                    listItems.appendChild(dateDiv);
+                });
+            }
+
+            function updateStats() {
+                const now = new Date();
+                const todayKey = now.toISOString().split('T')[0];
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+                const todayTotal = records.filter(r => r.dateKey === todayKey).reduce((s, r) => s + r.amount, 0);
+                const weekTotal = records.filter(r => new Date(r.timestamp) >= weekAgo).reduce((s, r) => s + r.amount, 0);
+                const allTotal = records.reduce((s, r) => s + r.amount, 0);
+
+                statToday.textContent = `¥${todayTotal.toFixed(0)}`;
+                statWeek.textContent = `¥${weekTotal.toFixed(0)}`;
+                statTotal.textContent = `¥${allTotal.toFixed(0)}`;
+            }
+
+            function renderAll() {
+                updateBalanceDisplay();
+                renderList();
+                updateStats();
+            }
+
+            function settle() {
+                if (records.length === 0) {
+                    showSettleAnimation('今天还没有记录，\n先记下一笔吧。');
+                    return;
+                }
+                const now = new Date();
+                const todayKey = now.toISOString().split('T')[0];
+                const todayRecords = records.filter(r => r.dateKey === todayKey);
+
+                if (todayRecords.length === 0) {
+                    showSettleAnimation('今天还没有记录，\n但历史不会忘记你之前写下的每一笔。');
+                    return;
+                }
+
+                const total = todayRecords.reduce((sum, rec) => sum + rec.amount, 0);
+                const remaining = balance - total;
+
+                const isNegative = remaining < 0;
+                const settleMsg = isNegative
+                    ? `今日共支出 ¥${total.toFixed(2)}\n已超出预算 ¥${Math.abs(remaining).toFixed(2)}\n蛇蜕皮偶尔也会疼，明天再重新长。`
+                    : `今日共支出 ¥${total.toFixed(2)}\n剩余 ¥${remaining.toFixed(2)} 可支配\n剩下的钱，要花在真正让你开心的地方。`;
+                showSettleAnimation(settleMsg);
+
+                // 分类统计
+                const catStats = {};
+                todayRecords.forEach(rec => {
+                    if (!catStats[rec.category]) catStats[rec.category] = 0;
+                    catStats[rec.category] += rec.amount;
+                });
+
+                let catHtml = '';
+                Object.keys(catStats).forEach(cat => {
+                    catHtml += `<div class="total-line"><span class="label">${categories[cat].icon} ${categories[cat].name}</span><span class="value">¥${catStats[cat].toFixed(2)}</span></div>`;
+                });
+
+                settleResult.innerHTML = `
+                    <div class="total-line"><span class="label">📅 结算日期</span><span class="value">${todayKey}</span></div>
+                    <div class="total-line"><span class="label">记录笔数</span><span class="value">${todayRecords.length} 笔</span></div>
+                    ${catHtml}
+                    <div class="total-line"><span class="label">今日总支出</span><span class="value">¥${total.toFixed(2)}</span></div>
+                    <div class="total-line"><span class="label">剩余可支配</span><span class="value remaining ${isNegative ? 'negative' : ''}">${isNegative ? '-' : ''}¥${Math.abs(remaining).toFixed(2)}</span></div>
+                `;
+                settleResult.classList.add('active');
+            }
+
+            function showSettleAnimation(text) {
+                settleText.textContent = text;
+                settleAnim.classList.add('active');
+                setTimeout(() => settleAnim.classList.remove('active'), 2500);
+            }
+
+            // ========== 事件绑定 ==========
+            setBalanceBtn.addEventListener('click', setBalance);
+            balanceInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') setBalance();
+            });
+            categoryRow.addEventListener('click', (e) => {
+                const btn = e.target.closest('.cat-btn');
+                if (btn) selectCategory(btn.dataset.cat);
+            });
+            addBtn.addEventListener('click', addRecord);
+            amountInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') addRecord();
+            });
+            settleBtn.addEventListener('click', settle);
+            clearAllBtn.addEventListener('click', clearAll);
+
+            // ========== 初始化 ==========
+            loadRecords();
+            renderAll();
+        })();
+    </script>
+</body>
+</html>
